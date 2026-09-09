@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+enum ProjectStatus {
+  IDEA
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum SkillLevel {
+  EXPLORING
+  LEARNING
+  FAMILIAR
+  INTERMEDIATE
+  ADVANCED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  siteName        String   @default("Ozaib")
+  tagline         String   @default("Cybersecurity Student")
+  description     String?
+  defaultLanguage String   @default("en")
+  accentColor     String   @default("#38bdf8")
+  analyticsEnabled Boolean  @default(false)
+  maintenanceMode Boolean  @default(false)
+  updatedAt        DateTime @updatedAt
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  displayName  String   @default("Ozaib")
+  title        String   @default("Cybersecurity Student")
+  shortBio     String?
+  longBio      String?
+  currentFocus String?
+  updatedAt    DateTime @updatedAt
+}
+
+model Skill {
+  id        String      @id @default(cuid())
+  name      String
+  category  String      @default("Other")
+  level     SkillLevel  @default(LEARNING)
+  sortOrder Int         @default(0)
+  visible   Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  shortDesc   String?
+  content     String?
+  category    String?
+  technologies String?
+  githubUrl   String?
+  liveUrl     String?
+  status      ProjectStatus @default(IDEA)
+  featured    Boolean       @default(false)
+  visible     Boolean       @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Post {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  excerpt       String?
+  content       String
+  coverImage    String?
+  category      String?
+  tags          String?
+  status        PostStatus @default(DRAFT)
+  featured      Boolean    @default(false)
+  seoTitle      String?
+  seoDescription String?
+  canonicalUrl  String?
+  publishedAt   DateTime?
+  scheduledAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model SocialLink {
+  id        String   @id @default(cuid())
+  platform  String
+  label     String?
+  url       String
+  visible   Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  company     String
+  position    String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  current     Boolean  @default(false)
+  technologies String?
+  location    String?
+  companyUrl  String?
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  institution String
+  degree      String?
+  field       String?
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  current     Boolean  @default(false)
+  location    String?
+  url         String?
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Certification {
+  id           String   @id @default(cuid())
+  name         String
+  issuer       String?
+  issueDate    DateTime?
+  expiryDate   DateTime?
+  credentialId String?
+  credentialUrl String?
+  description  String?
+  visible      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime?
+  category    String?
+  url         String?
+  imageUrl    String?
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
