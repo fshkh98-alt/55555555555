@@ -1,3 +1,86 @@
-import Link from "next/link"; import { Header } from "../../components/header";import {ArrowLeft} from "lucide-react";import {getDb} from "../../lib/prisma"; import { getLocale } from "../../lib/i18n";
-export const dynamic="force-dynamic";
-export default async function SkillsPage(){const locale=await getLocale(); const db=getDb();let skills:any[]=[];if(db){try{skills=await db.skill.findMany({where:{visible:true},orderBy:[{sortOrder:'asc'},{name:'asc'}]})}catch{}}const groups=skills.reduce((a,s)=>{(a[s.category]??=[]).push(s);return a},{} as Record<string,any[]>);return <main className="min-h-screen"><Header locale={locale}/><div className="px-6 py-16"><div className="mx-auto max-w-5xl"><Link href="/" className="button-secondary inline-flex"><ArrowLeft size={16}/> Back</Link><p className="mt-12 text-sm uppercase tracking-[0.25em] text-sky-500">Skills</p><h1 className="mt-3 text-5xl font-semibold tracking-tight">What I am learning and practicing.</h1>{skills.length===0?<div className="premium-card mt-10"><p className="text-zinc-500">No skills published yet. Levels will be added honestly as progress is made.</p></div>:<div className="mt-10 space-y-8">{Object.entries(groups).map(([cat,arr])=><section key={cat}><h2 className="mb-4 text-xl font-semibold">{cat}</h2><div className="grid gap-3 sm:grid-cols-2">{arr.map((s:any)=><div key={s.id} className="premium-card flex items-center justify-between"><span>{s.name}</span><span className="text-xs text-sky-500">{s.level.replace('_',' ')}</span></div>)}</div></section>)}</div>}</div></div></main>}
+import Link from "next/link";
+import { Header } from "../../components/header";
+import { ArrowLeft } from "lucide-react";
+import { getDb } from "../../lib/prisma";
+import { getLocale } from "../../lib/i18n";
+
+export const dynamic = "force-dynamic";
+
+export default async function SkillsPage() {
+  const locale = await getLocale();
+  const db = getDb();
+
+  let skills: any[] = [];
+
+  if (db) {
+    try {
+      skills = await db.skill.findMany({
+        where: { visible: true },
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      });
+    } catch {}
+  }
+
+  const groups = skills.reduce(
+    (a, s) => {
+      (a[s.category] ??= []).push(s);
+      return a;
+    },
+    {} as Record<string, any[]>
+  );
+
+  return (
+    <main className="min-h-screen">
+      <Header locale={locale} />
+
+      <div className="px-6 py-16">
+        <div className="mx-auto max-w-5xl">
+          <Link href="/" className="button-secondary inline-flex">
+            <ArrowLeft size={16} />
+            Back
+          </Link>
+
+          <p className="mt-12 text-sm uppercase tracking-[0.25em] text-sky-500">
+            Skills
+          </p>
+
+          <h1 className="mt-3 text-5xl font-semibold tracking-tight">
+            What I am learning and practicing.
+          </h1>
+
+          {skills.length === 0 ? (
+            <div className="premium-card mt-10">
+              <p className="text-zinc-500">
+                No skills published yet. Levels will be added honestly as
+                progress is made.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-10 space-y-8">
+              {Object.entries(groups).map(([cat, arr]) => (
+                <section key={cat}>
+                  <h2 className="mb-4 text-xl font-semibold">{cat}</h2>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {(arr as any[]).map((s: any) => (
+                      <div
+                        key={s.id}
+                        className="premium-card flex items-center justify-between"
+                      >
+                        <span>{s.name}</span>
+
+                        <span className="text-xs text-sky-500">
+                          {s.level.replace("_", " ")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}
